@@ -1,6 +1,6 @@
 ---
 title: "From Classroom to Code" 
-subtitle: "How the MDS Program Prepares You for Real-World Data Science"
+subtitle: "How the UBC MDS Program Prepares You for Real-World Data Science"
 author: "Inder Khera"
 date: "2025-01-18"
 categories: [news, code, analysis]
