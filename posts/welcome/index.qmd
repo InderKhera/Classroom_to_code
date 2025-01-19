@@ -1,0 +1,74 @@
+---
+title: "From Classroom to Code: How the MDS Program Prepares You for Real-World Data Science"
+author: "Inder Khera"
+date: "2025-01-18"
+categories: [news, code, analysis]
+image: "image1.png"
+---
+![](image1.png){width=300px}
+
+## Anxiety of Starting MDS
+When joining the UBC MDS program, the first thing you are made aware of is how fast paced and intense the program can be. Through this fast paced and intense learning, it is normal to feel anxious about if you are retaining the knowledge that you gained after each course ends. This can make you feel concerned if you will be ready for working in the Data Science field once you have finished this program.
+
+The directors of the MDS program must have realized this as they have created a way for us to be confident in our relative expertise, through doing a collaborative project in the course "Data Science Workflows (DSCI 522)". This course allows us to work in a group to tackle real life problems with machine learning models we have just learned. 
+
+My reasoning for writing this blog is to show future MDS candidates how much exactly they will have learned in this program by its halfway point using my group's Diabetes Analysis project as the reference point. Hopefully this will lower the anxiety of future cohorts and let them enjoy the program rather than stress about their futures.
+
+## Step 1: Find a problem that you believe you can help with
+
+Before you can come up with a solution, you need to identify a problem. The subject my group chose to work on was Diabetes Anlysis, since all of us were interested in working in the health sector after we graduate. The purpose of our project was to build a machine learning model that accurately predict whether or not the patients in the dataset have diabetes or not.
+
+## Step 2: Find the Data and see what would set your research apart from the rest
+
+We identified a dataset on Kaggle: [Pima Indians Diabetes Database](https://www.kaggle.com/datasets/uciml/pima-indians-diabetes-database). This dataset was clean and there was a previous machine learning model that worked with this dataset that would could compare our model too. We agreed with the previous models created, in that using a Logistic Regression model would be the best course of action, this is due to looking at the dataset, we see that the target variable is classified with binary values: 0 for Non-Diabetic and 1 for Diabetic.
+
+![](image2.png)
+
+ We did notice a few things that could have been done differently in prior models which we implemented into our research. The first thing we noticed is the previous models was the inclusion of outliers into the model. This will have negative effects in our model as it will influence the predicitions too much off of these observations. For example looking at the Glucose feature from the figure above we see that the Non-Diabetic class has a lot of outliers in the higher and lower range. On top of that there are values of 0 in both classes which for glucose levels should not be possible. 
+
+ For our research we decided to use Data Validation in our analysis using libraries such as `pandera` to keep values of our features in predetermined ranges that are considered valid, which dropped a total of 49 outliers.
+
+Another thing we identified that we wished to account for in our model was the class imbalance in the data set. Looking again at the Glucose feature in the histogram figure below we see that for most values of glucose, the count of the Diabetic class far outweights the count of the diabetic class. We implemented further validation from the `deepchecks` package using the ` ClassImbalance` function to ensure that our classes were not imbalanced too much to the point that we may need other data.
+
+![](image3.png){width=500px height=500px}
+
+## Step 3: Creating a baseline model
+After we have cleaned our data and done our EDA, it is time to create a baseline model to compare our model to. This was done using the `DummyClassifier` function from the `sklearn` package. This model essentially guesses for each observation the most likely of the two classes. Since the class with the most observations is Non-Diabetic, the model essentially guesses all the observations are Non-Diabetic, giving this model an accuracy of 67%.
+
+## Step 4: Create our Logistic Regression model
+Now after all of this work we get to finally create our own model. We use a `LogisticRegression` for our model, but we need to transform our data before we can put this into the model itself. Since all of our feautures are numeric, we use a `StandardScaler` which will remove the mean and scale the features down to unit variance. This ensures that all features contribute equally to our model and that the model isn't biased towards features with larger scales.
+
+## Step 5: Hyperparameter Optimization
+Our model still needs more fine tuning. For this we need to look at hyperparameters of the Logistic Regression model and see what would be the most efficient value for them. The hyperparameter we chose to optimize was `C`. `C` value determines how well our model fits to our training data, the higher the value of C the more it fits the training data. But we want to be careful with this as if the model is overfit on the training data, when making predictions on data outside of the training sample, we will have more inaccuracies. 
+
+Essentially we need to have a balance between fitting the training data enough to find relationships of features and the targets but not too much where we take in random noise that will not show up in our test data. To do this we use the `RandomSearchCV` function that takes in a range of values for `C` and finds which one would fit the model the best. For our model C was optimized at 0.027.
+
+## Step 6: Fit model and observe Feature importance
+After we have finally tuned up our model as best as we can. We fit the model onto our training data and observe the coefficient of each feature. 
+
+![](image4.png){width=250px height=300px}
+
+Looking at the figure above and when observing the coefficients with the highest magnitude, we see that the features with the highest influence over our predictions are Glucose and BMI. Since both of these coefficients are positive this indicates that the higher an observation's glucose or BMI levels are, the more likely the model will predict that they are Diabetic (Outcome = 1).
+
+## Step 7: Make predictions 
+Using the `predict` method of our Logistic Regression model, we make predictions to see how accurate our model is. 
+
+![](image5.png)
+
+The columns for the table above are (in order) true labels, predicted labels, prediction correctness, and predicted probabilities for the positive class.
+
+We see that for the first 4 observations we guessed correctly with if they belong to the Non-Diabetic class (Outcome = 0) or if they belong to the Diabetic class (Outcome = 1). The last column shows that for the first 3 our model was not close at all to predicicting Diabetes, meaning it was rightfully confident to predict Non-Diabetic. Meanwhile for the 4th row the confidence to predict Diabetic was only 60% which is not a lot of confidence. Our final observation in the table was not predicted correctly at all.
+
+In total, over all of our observation we had an accuracy rate of 75% which is not bad compared to the basline of 67% but it could definitely be better.
+
+# Step 8 Reflection about our model
+As mentioned before we are only at the midway of the program so there are many other steps we could have done to make this model more efficient. For example only after creating this model did we learn about Feature engineering and Feature Selection, where we generate new features from existing ones to further see the relationship betweent the target and coefficients, then we select the features that are the most important to the model and try to eleminate those that only bring unecessary noise. 
+
+We should have also used an F1 score (something else we learned after creating the model) to better measure the efficincy of our model, since our dataset was highly imbalanced. The F1 score is the harmonic mean of precision (how many predicted positives are correct) and recall (how many actual positives are identified), balancing the trade-off between precision and recall. 
+
+## New Outlook
+After this model I understood that I still have a long way to go to create the complex and accurate models that I desire to make. But this doesn't have me discouraged, after seeing how much I (along with my entire cohort) has progressed, I see that with each new block, how much we add on. Although the program is fast paced, and overwhelming at times, I am suprised by how much of the information I retain. 
+
+The courses are designed in a way that each block adds on to the previous courses so instead of 24 different courses it feels like 24 pieces of a puzzle that coming together. This makes me feel confident about my trajectory for the future after completing this program. Hopefully future cohorts will read this and not be as anxious as I was going into this program. You shouln't feel anxious about your future when it comes to how much you will retain from the program, for now all you need to worry about is submitting your labs in on time!
+
+![](image6.png)
